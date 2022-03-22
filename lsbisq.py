@@ -4,47 +4,86 @@ import json
 import sys
 import argparse
 
-# Parsing arguments
-parser = argparse.ArgumentParser(description="A script that lists all current Bisq offers in the terminal")
+def main():
+    # Parsing arguments
+    parser = argparse.ArgumentParser(description="A script that lists all current Bisq offers in the terminal")
 
-parser.add_argument(
-    "-t",
-    "--type",
-    help="Type of orders (BUY or SELL)",
-    type=str,
-    choices=["BUY", "SELL"],
-    default="SELL",
-)
+    parser.add_argument(
+        "-t",
+        "--type",
+        help="Type of orders (BUY or SELL)",
+        type=str,
+        choices=["BUY", "SELL"],
+        default="SELL",
+    )
 
-parser.add_argument(
-    "-f",
-    "--fiat",
-    help="Fiat currency",
-    type=str,
-    choices=["EUR", "USD", "CHF", "GBP", "AUD", "CAD", "BRL"],
-    default="EUR",
-)
+    parser.add_argument(
+        "-f",
+        "--fiat",
+        help="Fiat currency",
+        type=str,
+        choices=["EUR", "USD", "CHF", "GBP", "AUD", "CAD", "BRL"],
+        default="EUR",
+    )
 
-parser.add_argument(
-    "-d",
-    "--deviation",
-    help="Max deviation from market price",
-    type=int,
-    default=8,
-)
+    parser.add_argument(
+        "-d",
+        "--deviation",
+        help="Max deviation from market price",
+        type=int,
+        default=8,
+    )
 
-args = parser.parse_args()
+    parser.add_argument(
+        "-m",
+        "--method",
+        help="Payment Method",
+        nargs="*"
+    )
 
-fiat = args.fiat
-direction = args.type
-LIMIT = args.deviation
+    args = parser.parse_args()
 
-# Payment methods to avoid
-avoid_methods = ["F2F", "CASH_DEPOSIT", "ADVANCED_CASH", "HAL_CASH", "UPHOLD", "CASH_BY_MAIL"]
+    fiat = args.fiat
+    direction = args.type
+    LIMIT = args.deviation
+    paymentMethods = args.method
 
-krakenApi = "https://api.kraken.com/0/public/Ticker?pair=XBT" + fiat
-brasilbtcApi = "https://brasilbitcoin.com.br/API/prices/BTC"
-bisqApi = "https://bisq.markets/api/offers?market=btc_" + fiat.lower() + "&direction="
+    krakenApi = "https://api.kraken.com/0/public/Ticker?pair=XBT" + fiat
+    brasilbtcApi = "https://brasilbitcoin.com.br/API/prices/BTC"
+    bisqApi = "https://bisq.markets/api/offers?market=btc_" + fiat.lower() + "&direction="
+
+
+    kraken = jsonget(krakenApi)
+    if (fiat == "BRL"):
+        brasilbtc = jsonget(brasilbtcApi)
+        price_exch = int(float(brasilbtc['last']))
+    else:
+        kraken = jsonget(krakenApi)
+        if (fiat == "CHF" or fiat == "AUD"):
+            key = 'XBT' + fiat
+        else:
+            key = 'XXBTZ' + fiat
+    price_exch = int(float(kraken['result'][key]['c'][0]))
+
+    values = jsonget(bisqApi + direction)
+    print(f"Price: {price_exch} {fiat}\n")
+    if (direction=="SELL"):
+        print("BTC sell offers:\n")
+    else:
+        print("BTC buy offers:\n")
+
+    print(f"{'Price':14} {'Dif':6} {'BTC min':7} {'BTC max':10} {'Min':6} {'Max':7} {'Method':8}")
+    key ='btc_' + fiat.lower()
+    filteredOffers = filterOffers(values[key][direction.lower() + 's'], direction, price_exch, LIMIT, paymentMethods)
+    for line in filteredOffers:
+            price = int(float(line['price']))
+            var = (price/price_exch-1)*100
+            min_btc = float(line['min_amount'])
+            max_btc = float(line['amount'])
+            min_amount = min_btc * price
+            max_amount = float(line['volume'])
+            method = line['payment_method']
+            print(f"{price:8n} {fiat:4} {var:4.1f}% {min_btc:8.4f} {max_btc:8.4f} {min_amount:8n} {max_amount:8n} {method}")
 
 def jsonget(url):
     f = urlopen(url)
@@ -52,33 +91,21 @@ def jsonget(url):
     f.close()
     return jsonweb
 
-if (fiat=="BRL"):
-    brasilbtc = jsonget(brasilbtcApi)
-    price_exch = int(float(brasilbtc['last']))
-else:
-    kraken = jsonget(krakenApi)
-    if (fiat=="CHF" or fiat=="AUD"):
-        key = 'XBT' + fiat
-    else:
-        key ='XXBTZ' + fiat
-    price_exch = int(float(kraken['result'][key]['c'][0]))
+def filterOffers(offers, direction, indexPrice, priceDeviationLimit, methods=[],
+                 avoidMethods=["F2F", "CASH_DEPOSIT", "ADVANCED_CASH", "HAL_CASH", "UPHOLD"]):
+    filteredOfferes = []
+    for offer in offers:
+        price = int(float(offer['price']))
+        var = (price / indexPrice - 1) * 100
+        if (direction.upper() == "SELL" and var > priceDeviationLimit) or (direction.upper() == "BUY" and var < -priceDeviationLimit):
+            continue
+        if offer['payment_method'] in avoidMethods:
+            continue
+        if methods is not None and offer['payment_method'] not in methods:
+            continue
+        filteredOfferes.append(offer)
+    return filteredOfferes
 
-values = jsonget(bisqApi + direction)
-print(f"Price: {price_exch} {fiat}\n")
-if (direction=="SELL"):
-    print("BTC sell offers:\n")
-else:
-    print("BTC buy offers:\n")
+if __name__ == "__main__":
+    main()
 
-print(f"{'Price':14} {'Dif':6} {'BTC min':8} {'BTC max':9} {'Min':6} {'Max':5} {'Method'}") 
-key ='btc_' + fiat.lower()
-for line in values[key][direction.lower() + 's' ]:
-        price = int(float(line['price']))
-        var = (price/price_exch-1)*100
-        min_btc = float(line['min_amount'])
-        max_btc = float(line['amount'])
-        min_amount = int(min_btc * price)
-        max_amount = int(float(line['volume']))
-        method = line['payment_method']
-        if ((direction=="SELL" and var<LIMIT) or (direction=="BUY" and var>-LIMIT)) and method not in avoid_methods:
-            print(f"{price:8n} {fiat:4} {var:4.1f}% {min_btc:8.4f} {max_btc:8.4f} {min_amount:7n} {max_amount:7n} {method}")
