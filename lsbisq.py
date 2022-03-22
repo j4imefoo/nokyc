@@ -40,7 +40,7 @@ direction = args.type
 LIMIT = args.deviation
 
 # Payment methods to avoid
-avoid_methods = ["F2F", "CASH_DEPOSIT", "ADVANCED_CASH", "HAL_CASH", "UPHOLD"]
+avoid_methods = ["F2F", "CASH_DEPOSIT", "ADVANCED_CASH", "HAL_CASH", "UPHOLD", "CASH_BY_MAIL"]
 
 krakenApi = "https://api.kraken.com/0/public/Ticker?pair=XBT" + fiat
 brasilbtcApi = "https://brasilbitcoin.com.br/API/prices/BTC"
@@ -70,15 +70,15 @@ if (direction=="SELL"):
 else:
     print("BTC buy offers:\n")
 
-print(f"{'Price':14} {'Dif':6} {'BTC min':7} {'BTC max':10} {'Min':6} {'Max':7} {'Method':8}") 
+print(f"{'Price':14} {'Dif':6} {'BTC min':8} {'BTC max':9} {'Min':6} {'Max':5} {'Method'}") 
 key ='btc_' + fiat.lower()
 for line in values[key][direction.lower() + 's' ]:
         price = int(float(line['price']))
         var = (price/price_exch-1)*100
         min_btc = float(line['min_amount'])
         max_btc = float(line['amount'])
-        min_amount = min_btc * price
-        max_amount = float(line['volume'])
+        min_amount = int(min_btc * price)
+        max_amount = int(float(line['volume']))
         method = line['payment_method']
         if ((direction=="SELL" and var<LIMIT) or (direction=="BUY" and var>-LIMIT)) and method not in avoid_methods:
-            print(f"{price:8n} {fiat:4} {var:4.1f}% {min_btc:8.4f} {max_btc:8.4f} {min_amount:8n} {max_amount:8n} {method}")
+            print(f"{price:8n} {fiat:4} {var:4.1f}% {min_btc:8.4f} {max_btc:8.4f} {min_amount:7n} {max_amount:7n} {method}")
