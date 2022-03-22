@@ -7,13 +7,16 @@ This script shows all current buy or sell offers in the Bisq network in our pref
 
 # Parameters
 We can indicate the following paramenters in our script header:
-- `fiat`: currency we want to exchange for bitcoin
-- `limit`: only list quotations below this deviation from market price
 - `avoid_methods`: payment methods to hide in order to get a cleaner output
 
 # Usage
-- `lsbisq`: shows all BTC sell offers
-- `lsbisq -r`: shows all BTC buy offers
+`python3 lsbisq.py -t <type_of_order> -f <fiat> -d <max_deviation>`
+
+Where:
+- `<type_of_order>`: (string) BUY or SELL (example: `-t BUY`). Default value is `BUY`
+- `<fiat>`: (string) Currency we want to exchange for bitcoin (example:`-f EUR`). Default value is `EUR`
+- `<limit>`: (integer) Max deviation (in percentage) from market price (example: `-d 8`). Default value is 8 %
+
 
 # Example output
 ```
