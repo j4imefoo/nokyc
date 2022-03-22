@@ -2,16 +2,45 @@
 from urllib.request import urlopen
 import json
 import sys
+import argparse
 
-# EUR, USD, CHF, GBP
-fiat="EUR"
+# Parsing arguments
+parser = argparse.ArgumentParser(description="A script that lists all current Bisq offers in the terminal")
 
-# Max deviation from market price
-LIMIT = 8
+parser.add_argument(
+    "-t",
+    "--type",
+    help="Type of orders (BUY or SELL)",
+    type=str,
+    choices=["BUY", "SELL"],
+    default="SELL",
+)
+
+parser.add_argument(
+    "-f",
+    "--fiat",
+    help="Fiat currency",
+    type=str,
+    choices=["EUR", "USD", "CHF", "GBP"],
+    default="EUR",
+)
+
+parser.add_argument(
+    "-d",
+    "--deviation",
+    help="Max deviation from market price",
+    type=int,
+    default=8,
+)
+
+args = parser.parse_args()
+
+fiat = args.fiat
+direction = args.type
+LIMIT = args.deviation
 
 # Payment methods to avoid
 avoid_methods = ["F2F", "CASH_DEPOSIT", "ADVANCED_CASH", "HAL_CASH", "UPHOLD"]
-
 
 direction="SELL"
 
@@ -24,9 +53,6 @@ def jsonget(url):
     jsonweb = json.load(f)
     f.close()
     return jsonweb
-
-if (len(sys.argv)>1 and sys.argv[1]=="-r"):
-    direction="BUY"
 
 kraken = jsonget(krakenApi)
 if (fiat=="CHF"):
