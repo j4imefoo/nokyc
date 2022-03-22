@@ -21,7 +21,7 @@ parser.add_argument(
     "--fiat",
     help="Fiat currency",
     type=str,
-    choices=["EUR", "USD", "CHF", "GBP", "AUD", "CAD"],
+    choices=["EUR", "USD", "CHF", "GBP", "AUD", "CAD", "BRL"],
     default="EUR",
 )
 
@@ -43,6 +43,7 @@ LIMIT = args.deviation
 avoid_methods = ["F2F", "CASH_DEPOSIT", "ADVANCED_CASH", "HAL_CASH", "UPHOLD"]
 
 krakenApi = "https://api.kraken.com/0/public/Ticker?pair=XBT" + fiat
+brasilbtcApi = "https://brasilbitcoin.com.br/API/prices/BTC"
 bisqApi = "https://bisq.markets/api/offers?market=btc_" + fiat.lower() + "&direction="
 
 def jsonget(url):
@@ -51,15 +52,19 @@ def jsonget(url):
     f.close()
     return jsonweb
 
-kraken = jsonget(krakenApi)
-if (fiat=="CHF" or fiat=="AUD"):
-    key = 'XBT' + fiat
+if (fiat=="BRL"):
+    brasilbtc = jsonget(brasilbtcApi)
+    price_exch = int(float(brasilbtc['last']))
 else:
-    key ='XXBTZ' + fiat
-price_kraken = int(float(kraken['result'][key]['c'][0]))
+    kraken = jsonget(krakenApi)
+    if (fiat=="CHF" or fiat=="AUD"):
+        key = 'XBT' + fiat
+    else:
+        key ='XXBTZ' + fiat
+    price_exch = int(float(kraken['result'][key]['c'][0]))
 
 values = jsonget(bisqApi + direction)
-print(f"Price: {price_kraken} {fiat}\n")
+print(f"Price: {price_exch} {fiat}\n")
 if (direction=="SELL"):
     print("BTC sell offers:\n")
 else:
@@ -69,7 +74,7 @@ print(f"{'Price':14} {'Dif':6} {'BTC min':7} {'BTC max':10} {'Min':6} {'Max':7} 
 key ='btc_' + fiat.lower()
 for line in values[key][direction.lower() + 's' ]:
         price = int(float(line['price']))
-        var = (price/price_kraken-1)*100
+        var = (price/price_exch-1)*100
         min_btc = float(line['min_amount'])
         max_btc = float(line['amount'])
         min_amount = min_btc * price
