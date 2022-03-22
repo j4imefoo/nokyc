@@ -13,7 +13,7 @@ We can indicate the following paramenters in our script header:
 
 # Usage
 - `lsbisq`: shows all BTC sell offers
-- `lsbisq -r`: shows all BTC buy offers
+- `lsbisq -t BUY`: shows all BTC buy offers
 
 # Example output
 ```
