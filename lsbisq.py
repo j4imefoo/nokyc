@@ -21,7 +21,7 @@ parser.add_argument(
     "--fiat",
     help="Fiat currency",
     type=str,
-    choices=["EUR", "USD", "CHF", "GBP", "AUD"],
+    choices=["EUR", "USD", "CHF", "GBP", "AUD", "CAD"],
     default="EUR",
 )
 

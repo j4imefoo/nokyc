@@ -10,13 +10,16 @@ We can indicate the following paramenters in our script header:
 - `avoid_methods`: payment methods to hide in order to get a cleaner output
 
 # Usage
-`python3 lsbisq.py -t <type_of_order> -f <fiat> -d <max_deviation>`
+`lsbisq.py -t <type_of_order> -f <fiat> -d <max_deviation>`
 
 Where:
 - `<type_of_order>`: (string) BUY or SELL (example: `-t BUY`). Default value is `BUY`
 - `<fiat>`: (string) Currency we want to exchange for bitcoin (example:`-f EUR`). Default value is `EUR`
 - `<limit>`: (integer) Max deviation (in percentage) from market price (example: `-d 8`). Default value is 8 %
 
+Alternatively:
+
+`lsbisq.py -h` : to show help and check on possible fiat currencies
 
 # Example output
 ```
