@@ -21,7 +21,7 @@ parser.add_argument(
     "--fiat",
     help="Fiat currency",
     type=str,
-    choices=["EUR", "USD", "CHF", "GBP"],
+    choices=["EUR", "USD", "CHF", "GBP", "AUD"],
     default="EUR",
 )
 
@@ -42,10 +42,7 @@ LIMIT = args.deviation
 # Payment methods to avoid
 avoid_methods = ["F2F", "CASH_DEPOSIT", "ADVANCED_CASH", "HAL_CASH", "UPHOLD"]
 
-direction="SELL"
-
 krakenApi = "https://api.kraken.com/0/public/Ticker?pair=XBT" + fiat
-bitstampApi = "https://www.bitstamp.net/api/v2/ticker/btc" + fiat.lower()
 bisqApi = "https://bisq.markets/api/offers?market=btc_" + fiat.lower() + "&direction="
 
 def jsonget(url):
@@ -55,8 +52,8 @@ def jsonget(url):
     return jsonweb
 
 kraken = jsonget(krakenApi)
-if (fiat=="CHF"):
-    key = 'XBTCHF'
+if (fiat=="CHF" or fiat=="AUD"):
+    key = 'XBT' + fiat
 else:
     key ='XXBTZ' + fiat
 price_kraken = int(float(kraken['result'][key]['c'][0]))
