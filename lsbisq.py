@@ -1,19 +1,17 @@
 #!/usr/bin/env python3
-from urllib.request import urlopen
-import json
-import sys
 import argparse
-
+from bisq import Bisq
+from fiat import Fiat
 # Parsing arguments
 parser = argparse.ArgumentParser(description="A script that lists all current Bisq offers in the terminal")
 
 parser.add_argument(
     "-t",
     "--type",
-    help="Type of orders (BUY or SELL)",
+    help="Type of orders (buy or sell)",
     type=str,
-    choices=["BUY", "SELL"],
-    default="SELL",
+    choices=['buy', 'sell'],
+    default='sell',
 )
 
 parser.add_argument(
@@ -21,8 +19,8 @@ parser.add_argument(
     "--fiat",
     help="Fiat currency",
     type=str,
-    choices=["EUR", "USD", "CHF", "GBP", "AUD", "CAD", "BRL"],
-    default="EUR",
+    choices = ['eur', 'usd', 'gbp', 'cad', 'aud', 'chf', 'brl', 'czk', 'sek', 'nzd', 'dkk', 'pln'],
+    default='eur',
 )
 
 parser.add_argument(
@@ -32,53 +30,33 @@ parser.add_argument(
     type=int,
     default=8,
 )
-
+parser.add_argument(
+        "--tor",
+        help="Use TOR",
+        action='store_true',
+        default=False
+)
 args = parser.parse_args()
 
 fiat = args.fiat
 direction = args.type
 LIMIT = args.deviation
+tor = args.tor
 
 # Payment methods to avoid
 avoid_methods = ["F2F", "CASH_DEPOSIT", "ADVANCED_CASH", "HAL_CASH", "UPHOLD", "CASH_BY_MAIL"]
 
-krakenApi = "https://api.kraken.com/0/public/Ticker?pair=XBT" + fiat
-brasilbtcApi = "https://brasilbitcoin.com.br/API/prices/BTC"
-bisqApi = "https://bisq.markets/api/offers?market=btc_" + fiat.lower() + "&direction="
+price_exch = Fiat.getfiatprice(fiat)
 
-def jsonget(url):
-    f = urlopen(url)
-    jsonweb = json.load(f)
-    f.close()
-    return jsonweb
+bisqOffers = Bisq.getOffers(fiat, direction, price_exch, tor)
 
-if (fiat=="BRL"):
-    brasilbtc = jsonget(brasilbtcApi)
-    price_exch = int(float(brasilbtc['last']))
-else:
-    kraken = jsonget(krakenApi)
-    if (fiat=="CHF" or fiat=="AUD"):
-        key = 'XBT' + fiat
-    else:
-        key ='XXBTZ' + fiat
-    price_exch = int(float(kraken['result'][key]['c'][0]))
-
-values = jsonget(bisqApi + direction)
-print(f"Price: {price_exch} {fiat}\n")
-if (direction=="SELL"):
+print(f"Price: {price_exch} {fiat.upper()}\n")
+if (direction=="sell"):
     print("BTC sell offers:\n")
 else:
     print("BTC buy offers:\n")
 
-print(f"{'Price':14} {'Dif':6} {'BTC min':8} {'BTC max':9} {'Min':6} {'Max':5} {'Method'}") 
-key ='btc_' + fiat.lower()
-for line in values[key][direction.lower() + 's' ]:
-        price = int(float(line['price']))
-        var = (price/price_exch-1)*100
-        min_btc = float(line['min_amount'])
-        max_btc = float(line['amount'])
-        min_amount = int(min_btc * price)
-        max_amount = int(float(line['volume']))
-        method = line['payment_method']
-        if ((direction=="SELL" and var<LIMIT) or (direction=="BUY" and var>-LIMIT)) and method not in avoid_methods:
-            print(f"{price:8n} {fiat:4} {var:4.1f}% {min_btc:8.4f} {max_btc:8.4f} {min_amount:7n} {max_amount:7n} {method}")
+print(f"{'Exchange':8} {'Price':12} {'Dif':6} {'BTC min':8} {'BTC max':9} {'Min':6} {'Max':5} {'Method'}") 
+for offer in bisqOffers:
+        if ((direction=="sell" and offer['dif']<LIMIT) or (direction=="buy" and offer['dif']>-LIMIT)) and offer['method'] not in avoid_methods:
+            print(f"{offer['exchange']:8}{offer['price']:8n} {fiat.upper():4} {offer['dif']:4.1f}% {offer['min_btc']:8.4f} {offer['max_btc']:8.4f} {offer['min_amount']:7n} {offer['max_amount']:7n} {offer['method']}")

@@ -10,16 +10,32 @@ We can indicate the following paramenters in our script header:
 - `avoid_methods`: payment methods to hide in order to get a cleaner output
 
 # Usage
-`lsbisq.py -t <type_of_order> -f <fiat> -d <max_deviation>`
+`lsbisq.py -t <type_of_order> -f <fiat> -d <max_deviation> [--tor]`
 
 Where:
-- `<type_of_order>`: (string) BUY or SELL (example: `-t BUY`). Default value is `BUY`
+- `<type_of_order>`: (string) buy or sell (example: `-t buy`). Default value is `sell`
 - `<fiat>`: (string) Currency we want to exchange for bitcoin (example:`-f EUR`). Default value is `EUR`
 - `<limit>`: (integer) Max deviation (in percentage) from market price (example: `-d 8`). Default value is 8 %
+-
 
-Alternatively:
+# Usage
+```
+usage: lsbisq.py [-h] [-t {buy,sell}] [-f {eur,usd,gbp,cad,aud,chf,brl,czk,sek,nzd,dkk,pln}] [-d DEVIATION] [--tor]
 
-`lsbisq.py -h` : to show help and check on possible fiat currencies
+A script that lists all current Bisq offers in the terminal
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -t {buy,sell}, --type {buy,sell}
+                        Type of orders (buy or sell)
+  -f {eur,usd,gbp,cad,aud,chf,brl,czk,sek,nzd,dkk,pln}, --fiat {eur,usd,gbp,cad,aud,chf,brl,czk,sek,nzd,dkk,pln}
+                        Fiat currency
+  -d DEVIATION, --deviation DEVIATION
+                        Max deviation from market price
+  --tor                 Use TOR
+```
+
+
 
 # Example output
 ```
