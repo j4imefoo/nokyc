@@ -1,28 +1,12 @@
-# lsbisq
-A script that lists all current Bisq offers in the terminal
+# nokyc 
+A script that lists all current [Bisq](https://bisq.network), [HodlHodl](https://hodlhodl.com) and [Robosats](https://unsafe.robosats.com) offers in the terminal
 
-[Bisq](https://bisq.network) is a decentralized bitcoin exchange that allows us to buy or sell bitcoin peer-to-peer. 
-
-This script shows all current buy or sell offers in the Bisq network in our preferred fiat currency. 
-
-# Parameters
-We can indicate the following paramenters in our script header:
-- `avoid_methods`: payment methods to hide in order to get a cleaner output
-
-# Usage
-`lsbisq.py -t <type_of_order> -f <fiat> -d <max_deviation> [--tor]`
-
-Where:
-- `<type_of_order>`: (string) buy or sell (example: `-t buy`). Default value is `sell`
-- `<fiat>`: (string) Currency we want to exchange for bitcoin (example:`-f EUR`). Default value is `EUR`
-- `<limit>`: (integer) Max deviation (in percentage) from market price (example: `-d 8`). Default value is 8 %
--
 
 # Usage
 ```
-usage: lsbisq.py [-h] [-t {buy,sell}] [-f {eur,usd,gbp,cad,aud,chf,brl,czk,sek,nzd,dkk,pln}] [-d DEVIATION] [--tor]
+nokyc.py [-h] [-t {buy,sell}] [-f {eur,usd,gbp,cad,aud,chf,brl,czk,sek,nzd,dkk,pln}] [-d DEVIATION]
 
-A script that lists all current Bisq offers in the terminal
+A script that lists all current Bisq, HodlHodl and Robosats offers in the terminal
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -32,31 +16,44 @@ optional arguments:
                         Fiat currency
   -d DEVIATION, --deviation DEVIATION
                         Max deviation from market price
-  --tor                 Use TOR
+
 ```
 
+# Configuration
+
+We can modify the following parameters in our script nokyc.py:
+
+- `TOR_PORT`: local tor port. 9050 in case of tor daemon or 9150 for Tor browser
+- `avoid_methods`: payment methods to hide in order to get a cleaner output. In small caps
 
 
 # Example output
 ```
-$ lsbisq.py
+$ nokyc -f eur -t sell -d 8
 
-Price: 37235 EUR
+Price: 42037 EUR
 
 BTC sell offers:
 
-Price          Dif    BTC min BTC max    Min    Max     Method  
-   36854 EUR  -1.0%   0.0010   0.0010   36.854  36.8545 SEPA
-   37226 EUR  -0.0%   0.0140   0.0140  521.164  521.175 SEPA_INSTANT
-   37971 EUR   2.0%   0.1000   0.1000   3797.1  3797.13 REVOLUT
-   38343 EUR   3.0%   0.1000   0.1000   3834.3  3834.36 SEPA
-   38343 EUR   3.0%   0.0100   0.0100   383.43  383.436 SEPA
-   38511 EUR   3.4%   0.0280   0.0712  1078.31  2741.99 SEPA
-   38712 EUR   4.0%   0.0207   0.0207  801.338  801.341 REVOLUT
+Exchange Price        Dif    BTC min  BTC max   Min    Max   Method
+Bisq       42039 EUR   0.0%   0.2500   0.2500   10509   10509 SEPA
+Bisq       42039 EUR   0.0%   0.1500   0.1500    6305    6305 REVOLUT
+HodlHodl   42280 EUR   0.6%   0.0071   0.0142     300     600 Hal-cash
+Bisq       42459 EUR   1.0%   0.1000   0.1000    4245    4245 SEPA
+Bisq       42880 EUR   2.0%   0.0250   0.0250    1072    1072 F2F
+HodlHodl   43042 EUR   2.4%   0.0023   0.0081     100     350 AdvCash
+Bisq       43090 EUR   2.5%   0.1000   0.1000    4309    4309 REVOLUT
+Bisq       43090 EUR   2.5%   0.0190   0.0215     818     926 F2F
+HodlHodl   43238 EUR   2.9%   0.0104   0.2313     450   10000 TransferWise
+HodlHodl   44129 EUR   5.0%   0.0045   0.0113     200     500 HalCash
+Bisq       44141 EUR   5.0%   0.0250   0.3000    1103   13242 F2F
+Bisq       44267 EUR   5.3%   0.0100   0.0100     442     442 REVOLUT
+Robosats   44531 EUR   6.0%   0.0016   0.0056      70     250 Revolut
+
 ```
 
 # Possible use cases
-One can use this script to check on current offers and decide if starting the Bisq program in order to buy or sell bitcoin. Take into account that it is possible to run this script wherever we have Python installed, including an Android phone using Termux.
+One can use this script to check on current offers and decide if connecting to Bisq, HodlHodl or Robosats in order to buy or sell bitcoin. Take into account that it is possible to run this script wherever we have Python installed, including an Android phone using Termux.
 
 It is very easy to automate it and, eg., get an SMS notification once the script finds a quotation we might be interested in. 
 

@@ -1,21 +1,20 @@
 #!/usr/bin/env python3
 
 import json
-import requests
 
-def getcgprice(fiat):
+def getcgprice(fiat, session):
     coingeckoApi = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency='
     
-    f = requests.get(coingeckoApi + fiat + '&ids=bitcoin')
+    f = session.get(coingeckoApi + fiat + '&ids=bitcoin')
     priceapi = f.json()
     f.close()
     price = priceapi[0]['current_price']
     return price
 
-def getkprice(fiat):
+def getkprice(fiat, session):
     krakenApi = 'https://api.kraken.com/0/public/Ticker?pair=XBT'
     
-    f = requests.get(krakenApi + fiat.upper())
+    f = session.get(krakenApi + fiat.upper())
     priceapi = f.json()
     f.close()
     
@@ -27,14 +26,14 @@ def getkprice(fiat):
     return price
 
 class Fiat:
-    def getfiatprice(fiat):
+    def getfiatprice(fiat, session):
         fiat_kraken = ['eur', 'usd', 'gbp', 'cad', 'aud', 'chf']
         fiat_coingecko = ['brl', 'czk', 'sek', 'nzd', 'dkk', 'pln']
     
         if fiat in fiat_kraken:
-            price = getkprice(fiat)
+            price = getkprice(fiat, session)
         else:
-            price = getcgprice(fiat)
+            price = getcgprice(fiat, session)
 
         return price
 
