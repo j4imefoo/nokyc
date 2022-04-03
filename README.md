@@ -1,5 +1,5 @@
 # nokyc 
-A script that lists all current [Bisq](https://bisq.network), [HodlHodl](https://hodlhodl.com) and [Robosats](https://unsafe.robosats.com) offers in the terminal
+A script that lists all current [Bisq](https://bisq.network), [HodlHodl](https://hodlhodl.com) and [Robosats](https://unsafe.robosats.com) offers in the terminal and connects via TOR
 
 
 # Usage
