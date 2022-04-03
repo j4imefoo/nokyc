@@ -2,6 +2,8 @@
 
 import argparse
 import requests
+import sys
+import signal
 
 from bisq import Bisq
 from robosats import Robosats
@@ -25,6 +27,9 @@ def get_tor_session():
                         'https': 'socks5h://127.0.0.1:' + TOR_PORT}
      return session
 
+def sigint_handler(signal, frame):
+    print ('Cancelled.')
+    sys.exit(0)
 
 def get_user_arguments():
     parser = argparse.ArgumentParser(description="A script that lists all current Bisq, HodlHodl and Robosats offers in the terminal")
@@ -60,6 +65,7 @@ def get_user_arguments():
     
 if __name__ == "__main__":
 
+    signal.signal(signal.SIGINT, sigint_handler)
     fiat, direction, limit = get_user_arguments()
     session = get_tor_session()
 
