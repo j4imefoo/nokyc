@@ -8,7 +8,6 @@ import signal
 from bisq import Bisq
 from robosats import Robosats
 from hodlhodl import HodlHodl
-from fiat import Fiat
 
 
 ## User configuration
@@ -69,14 +68,17 @@ if __name__ == "__main__":
     fiat, direction, limit = get_user_arguments()
     session = get_tor_session()
 
-    price_exch = Fiat.getfiatprice(fiat, session)
+    price_exch = Bisq.getFiatPrice(fiat, session)
 
     bisqOffers = Bisq.getOffers(fiat, direction, price_exch, session)
     robosatsOffers = Robosats.getOffers(fiat, direction, session)
     hodlhodlOffers = HodlHodl.getOffers(fiat, direction, price_exch, session)
 
     allOffers = bisqOffers + robosatsOffers + hodlhodlOffers
-    allOffers.sort(key=lambda item: item.get('price'))
+    if (direction=='sell'):
+        allOffers.sort(key=lambda item: item.get('price'))
+    else:
+        allOffers.sort(key=lambda item: item.get('price'), reverse=True)
 
     print(f"Price: {price_exch} {fiat.upper()}\n")
     

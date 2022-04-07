@@ -42,3 +42,14 @@ class Bisq:
             alloffers.append(offer)
         alloffers.sort(key=lambda item: item.get('price'))
         return alloffers
+
+    def getFiatPrice(fiat, session):
+        bisqApi = 'http://wizpriceje6q5tdrxkyiazsgu7irquiqjy2dptezqhrtu7l2qelqktid.onion/getAllMarketPrices'
+
+        f = session.get(bisqApi)
+        priceapi = f.json()
+        f.close()
+        for currency in priceapi['data']:
+            if (currency['currencyCode'].lower()==fiat):
+                return int(float(currency['price']))
+
