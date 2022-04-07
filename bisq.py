@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+# 2022 @j4imefoo
+
 import json
 
 

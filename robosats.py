@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+# 2022 @j4imefoo
+
 import json
 
 currencies = {"1":"USD", "2":"EUR", "3":"JPY", "4":"GBP", "5":"AUD", "6":"CAD", "7":"CHF", "8":"CNY", "9":"HKD", "10":"NZD", "11":"SEK", "12":"KRW", "13":"SGD", "14":"NOK",
