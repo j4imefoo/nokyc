@@ -18,7 +18,7 @@ from hodlhodl import HodlHodl
 TOR_PORT = '9050'
 
 # Payment methods to avoid. In lower case.
-avoid_methods = ["monero", "ripple", "litecoin"]
+avoid_methods = ["ripple", "litecoin"]
 
 ## End User configuration
 
