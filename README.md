@@ -36,7 +36,7 @@ optional arguments:
 
 ## Configuration
 
-We can modify the following parameters in our script nokyc.py:
+We can modify the following parameters in the `nokycconfig.ini` configuration file:
 
 - `TOR_PORT`: The local Tor SOCKS5 port to use, usually 9050 in case of Tor daemon or 9150 for Tor browser.
 - `avoid_methods`: A list of payment methods to hide in order to get a cleaner output. Methods should be specified in all lower case.
