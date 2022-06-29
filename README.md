@@ -15,6 +15,8 @@ git clone https://github.com/j4imefoo/nokyc.git
 python3 -m pip install -r requirements.txt
 ```
 
+***Please note that you must be running Tor (either via the daemon or the Tor browser) in order for the script to properly gather offers over Tor. The easiest way to get started if you're unfamiliar is to download and run [the Tor browser](https://www.torproject.org/download/) and edit `TOR_PORT` to `9150` as shown below.***
+
 ## Usage
 
 ```bash
