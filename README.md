@@ -2,6 +2,10 @@
 
 A script that lists all current [Bisq](https://bisq.network), [HodlHodl](https://hodlhodl.com), and [Robosats](https://unsafe.robosats.com) offers in the terminal, with all communication being done via the Tor network.
 
+# Demo
+
+[![asciicast](https://asciinema.org/a/Q8ug2q5x45iYRqGaHF4d7GMc5.svg)](https://asciinema.org/a/Q8ug2q5x45iYRqGaHF4d7GMc5?speed=2&autoplay=1)
+
 ## Installation
 
 In order to install this script, simply clone the repository and install the requirements (if necessary) via the below commands:
