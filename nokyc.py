@@ -3,9 +3,12 @@
 # 2022 @j4imefoo 
 
 import argparse
+import itertools
 import requests
 import sys
 import signal
+import threading
+import time
 
 from bisq import Bisq
 from robosats import Robosats
@@ -31,6 +34,15 @@ def get_tor_session():
 def sigint_handler(signal, frame):
     print ('Cancelled.')
     sys.exit(0)
+
+# Define a simple "loading" animation while we gather offers
+def animate():
+    for c in itertools.cycle(['|', '/', '-', '\\']):
+        if done:
+            break
+        sys.stdout.write('\rGathering offers... ' + c)
+        sys.stdout.flush()
+        time.sleep(0.1)
 
 def get_user_arguments():
     parser = argparse.ArgumentParser(description="A script that lists all current Bisq, HodlHodl and Robosats offers in the terminal")
@@ -65,6 +77,13 @@ def get_user_arguments():
     return fiat, direction, limit
     
 if __name__ == "__main__":
+    # Display a simple loading animation
+    # Put the animation in a thread so the rest of the function can proceed
+    done = False
+    t = threading.Thread(target=animate)
+    # Allow a user to exit out of the script and animation cleanly
+    t.daemon=True
+    t.start()
 
     signal.signal(signal.SIGINT, sigint_handler)
     fiat, direction, limit = get_user_arguments()
@@ -82,7 +101,11 @@ if __name__ == "__main__":
     else:
         allOffers.sort(key=lambda item: item.get('price'), reverse=True)
 
-    print(f"Price: {price_exch} {fiat.upper()}\n")
+    # Stop the loading animation
+    done = True
+
+    print('\r                      ', end = '')
+    print(f"\rPrice: {price_exch} {fiat.upper()}\n")
     
     print(f"BTC {direction} offers:\n")
 
