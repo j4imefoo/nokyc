@@ -44,7 +44,7 @@ We can modify the following parameters in the `nokycconfig.ini` configuration fi
 ## Example output
 
 ```bash
-$ nokyc -f eur -t sell -d 8
+$ nokyc.py -f eur -t sell -d 8
 
 Price: 42037 EUR
 
