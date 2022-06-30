@@ -1,3 +1,4 @@
 argparse
+configparser
 pysocks
 requests
