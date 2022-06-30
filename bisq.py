@@ -2,14 +2,12 @@
 
 # 2022 @j4imefoo
 
-import json
-
-
 class Bisq:
-    
+
+    @staticmethod
     def getOffers(fiat, direction, refprice, session):
 
-        # fiat = eur, usd, 
+        # fiat = eur, usd,
         # direction = buy or sell
         # refprice = int
         # tor = 1 or 0
@@ -23,12 +21,11 @@ class Bisq:
             print("Please, make sure you are running TOR!")
             exit(1)
 
-
         values = f.json()
         f.close()
-    
+
         key = f"btc_{fiat}"
-        
+
         alloffers = []
 
         for line in values[key][direction + 's' ]:
@@ -45,6 +42,7 @@ class Bisq:
         alloffers.sort(key=lambda item: item.get('price'))
         return alloffers
 
+    @staticmethod
     def getFiatPrice(fiat, session):
         bisqApi = 'http://wizpriceje6q5tdrxkyiazsgu7irquiqjy2dptezqhrtu7l2qelqktid.onion/getAllMarketPrices'
 
@@ -54,4 +52,3 @@ class Bisq:
         for currency in priceapi['data']:
             if (currency['currencyCode'].lower()==fiat):
                 return int(float(currency['price']))
-

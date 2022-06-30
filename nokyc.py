@@ -1,29 +1,31 @@
 #!/usr/bin/env python3
 
-# 2022 @j4imefoo 
+# 2022 @j4imefoo
 
 import argparse
+import configparser
 import itertools
-import requests
-import sys
 import signal
+import sys
 import threading
 import time
 
-from bisq import Bisq
-from robosats import Robosats
-from hodlhodl import HodlHodl
+import requests
 
+from bisq import Bisq
+from hodlhodl import HodlHodl
+from robosats import Robosats
 
 # Import user configuration from nokycconfig.ini file
 config = configparser.ConfigParser()
 config.read('nokycconfig.ini')
 
+
 def get_tor_session():
-     session = requests.session()
-     session.proxies = {'http':  'socks5h://127.0.0.1:' + config['DEFAULT']['TOR_PORT'],
-                        'https': 'socks5h://127.0.0.1:' + config['DEFAULT']['TOR_PORT']}
-     return session
+    session = requests.session()
+    session.proxies = {'http':  'socks5h://127.0.0.1:' + config['DEFAULT']['TOR_PORT'],
+                    'https': 'socks5h://127.0.0.1:' + config['DEFAULT']['TOR_PORT']}
+    return session
 
 def sigint_handler(signal, frame):
     print ('Cancelled.')
@@ -69,7 +71,7 @@ def get_user_arguments():
     direction = args.type
     limit = args.deviation
     return fiat, direction, limit
-    
+
 if __name__ == "__main__":
     # Display a simple loading animation
     # Put the animation in a thread so the rest of the function can proceed
@@ -100,10 +102,10 @@ if __name__ == "__main__":
 
     print('\r                      ', end = '')
     print(f"\rPrice: {price_exch} {fiat.upper()}\n")
-    
+
     print(f"BTC {direction} offers:\n")
 
-    print(f"{'Exchange':8} {'Price':12} {'Dif':6} {'BTC min':8} {'BTC max':9} {'Min':6} {'Max':5} {'Method'}") 
+    print(f"{'Exchange':8} {'Price':12} {'Dif':6} {'BTC min':8} {'BTC max':9} {'Min':6} {'Max':5} {'Method'}")
 
     for offer in allOffers:
         if ((direction=="sell" and offer['dif']<limit) or (direction=="buy" and offer['dif']>-limit)) and offer['method'].lower() not in config['DEFAULT']['avoid_methods']:
