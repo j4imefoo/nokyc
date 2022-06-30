@@ -1,4 +1,1 @@
-argparse
-configparser
-pysocks
 requests
