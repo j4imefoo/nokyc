@@ -10,6 +10,7 @@ import sys
 import signal
 import threading
 import time
+import json
 
 from bisq import Bisq
 from robosats import Robosats
