@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# 2022 @j4imefoo 
+# 2022 @j4imefoo
 
 import argparse
 import configparser
@@ -42,6 +42,7 @@ def animate():
 
 def get_user_arguments():
     parser = argparse.ArgumentParser(description="A script that lists all current Bisq, HodlHodl and Robosats offers in the terminal")
+    supported_exchanges = ["bisq", "robosats", "hodlhodl", "all"]
 
     parser.add_argument(
         "-t",
@@ -66,12 +67,32 @@ def get_user_arguments():
         type=int,
         default=8,
     )
+    parser.add_argument(
+        "-e",
+        "--exchange",
+        help="Exchange: " + " ".join(supported_exchanges),
+        type=str,
+        default="all",
+    )
     args = parser.parse_args()
     fiat = args.fiat
     direction = args.type
     limit = args.deviation
-    return fiat, direction, limit
-    
+    exchange = args.exchange.lower()
+
+    if "," in exchange:
+        exchanges = exchange.replace(" ", "").split(",")
+    else:
+        exchanges = [exchange]
+
+    # check that exchanges are supported
+    for ex in exchanges:
+        if ex not in supported_exchanges:
+            raise Exception(f'Sorry, only the following exchanges are supported: '
+                    + " ".join(supported_exchanges))
+
+    return fiat, direction, limit, exchanges
+
 if __name__ == "__main__":
     # Display a simple loading animation
     # Put the animation in a thread so the rest of the function can proceed
@@ -82,16 +103,20 @@ if __name__ == "__main__":
     t.start()
 
     signal.signal(signal.SIGINT, sigint_handler)
-    fiat, direction, limit = get_user_arguments()
+    fiat, direction, limit, exchanges = get_user_arguments()
     session = get_tor_session()
 
     price_exch = Bisq.getFiatPrice(fiat, session)
 
-    bisqOffers = Bisq.getOffers(fiat, direction, price_exch, session)
-    robosatsOffers = Robosats.getOffers(fiat, direction, session)
-    hodlhodlOffers = HodlHodl.getOffers(fiat, direction, price_exch, session)
+    allOffers = []
+    if "all" in exchanges or "bisq" in exchanges:
+        allOffers = allOffers + Bisq.getOffers(fiat, direction, price_exch, session)
+    if "all" in exchanges or "robosats" in exchanges:
+        allOffers = allOffers + Robosats.getOffers(fiat, direction, session)
+    if "all" in exchanges or "hodlhodl" in exchanges:
+        allOffers = allOffers + HodlHodl.getOffers(fiat, direction, price_exch,
+            session)
 
-    allOffers = bisqOffers + robosatsOffers + hodlhodlOffers
     if (direction=='sell'):
         allOffers.sort(key=lambda item: item.get('price'))
     else:
@@ -102,10 +127,10 @@ if __name__ == "__main__":
 
     print('\r                      ', end = '')
     print(f"\rPrice: {price_exch} {fiat.upper()}\n")
-    
+
     print(f"BTC {direction} offers:\n")
 
-    print(f"{'Exchange':8} {'Price':12} {'Dif':6} {'BTC min':8} {'BTC max':9} {'Min':6} {'Max':5} {'Method'}") 
+    print(f"{'Exchange':8} {'Price':12} {'Dif':6} {'BTC min':8} {'BTC max':9} {'Min':6} {'Max':5} {'Method'}")
 
     for offer in allOffers:
         if ((direction=="sell" and offer['dif']<limit) or (direction=="buy" and offer['dif']>-limit)) and offer['method'].lower() not in config['DEFAULT']['avoid_methods']:

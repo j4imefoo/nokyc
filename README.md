@@ -20,11 +20,11 @@ python3 -m pip install -r requirements.txt
 ## Usage
 
 ```bash
-nokyc.py [-h] [-t {buy,sell}] [-f {eur,usd,gbp,cad,aud,chf,brl,czk,sek,nzd,dkk,pln}] [-d DEVIATION]
+nokyc.py [-h] [-t {buy,sell}] [-f {eur,usd,gbp,cad,aud,chf,brl,czk,sek,nzd,dkk,pln}] [-d DEVIATION] [-e EXCHANGE]
 
 A script that lists all current Bisq, HodlHodl and Robosats offers in the terminal
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   -t {buy,sell}, --type {buy,sell}
                         Type of orders (buy or sell)
@@ -32,6 +32,8 @@ optional arguments:
                         Fiat currency
   -d DEVIATION, --deviation DEVIATION
                         Max deviation from market price
+  -e EXCHANGE, --exchange EXCHANGE
+                        Exchange: bisq robosats hodlhodl
 ```
 
 ## Configuration
